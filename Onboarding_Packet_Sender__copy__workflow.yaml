@@ -1,0 +1,116 @@
+version: '1.0'
+blocks:
+  8f4396a9-68c3-40ac-976e-2839740a22db:
+    type: starter
+    name: Start
+    inputs:
+      startWorkflow: manual
+    connections:
+      success: 064becfd-4a78-4a2f-b37a-a3a490f3ff07
+  35156675-4b23-4690-a8d2-977e2503811d:
+    type: loop
+    name: Loop 1
+    inputs:
+      count: 5
+      loopType: forEach
+      collection: <supabase1.results>
+    connections:
+      loop:
+        start: 35109281-e7c0-46ed-9797-e0ab9e0231f0
+  26300bfe-b735-434d-a025-08f8a5d29862:
+    type: function
+    name: Company Name
+    inputs:
+      code: |-
+        const company_name = "ABC Company";
+
+        return company_name;
+    connections:
+      success: 35156675-4b23-4690-a8d2-977e2503811d
+  35109281-e7c0-46ed-9797-e0ab9e0231f0:
+    type: gmail
+    name: Gmail 1
+    inputs:
+      operation: send_gmail
+      to: <loop.currentItem.email>
+      subject: Your Onboarding Materials - Welcome to <companyname.result>
+      body: |-
+        Hi <loop.currentItem.name>,
+
+        We’re excited for you to join <companyname.result>as a <loop.currentItem.job_title>! To help you get started smoothly, we’ve put together some onboarding materials for you.
+
+        📂 Onboarding Materials
+        You can access everything here: 
+        <drivelink.result>
+
+        Inside, you’ll find:
+
+        - A Welcome Guide with an overview of our company and culture.
+        - Step-by-step instructions for setting up your accounts and tools
+        - Policies and guidelines you’ll need to review.
+        A schedule of your first week’s activities and orientation sessions
+
+        Please take some time to review these before your first day. If you have any issues accessing the files or questions about the content, don’t hesitate to reach out.
+
+        We’re thrilled to have you onboard and look forward to officially welcoming you soon!
+
+        Best regards,
+        <name.result>
+        <title.result>
+        <companyname.result>
+    parentId: 35156675-4b23-4690-a8d2-977e2503811d
+  03b6f716-52a1-4421-a357-9bae46e31f68:
+    type: supabase
+    name: Supabase 1
+    inputs:
+      operation: query
+      orderBy: created_at DESC
+      limit: <newrecruitsnum.result>
+    connections:
+      success:
+        - 26300bfe-b735-434d-a025-08f8a5d29862
+        - 105574cb-4d76-40d4-8e2a-454672b07bb4
+        - adf96c96-6df5-461b-8700-d2e22e684439
+        - 9c43c091-ce72-434a-b2b2-61d09dc6caf1
+  064becfd-4a78-4a2f-b37a-a3a490f3ff07:
+    type: function
+    name: New Recruits Num
+    inputs:
+      code: |-
+        //CHANGE THE NUMBER BELOW. How many new employees are there
+
+        const new_employees = 5 ;
+
+        return new_employees;
+    connections:
+      success: 03b6f716-52a1-4421-a357-9bae46e31f68
+  9c43c091-ce72-434a-b2b2-61d09dc6caf1:
+    type: function
+    name: Drive Link
+    inputs:
+      code: |-
+        const drive_link= "https://drive-example.com";
+
+        return drive_link;
+    connections:
+      success: 35156675-4b23-4690-a8d2-977e2503811d
+  adf96c96-6df5-461b-8700-d2e22e684439:
+    type: function
+    name: Manager Name
+    inputs:
+      code: |-
+        const name= "John Doe";
+
+        return name;
+    connections:
+      success: 35156675-4b23-4690-a8d2-977e2503811d
+  105574cb-4d76-40d4-8e2a-454672b07bb4:
+    type: function
+    name: Title
+    inputs:
+      code: |-
+        const title= "HR Manager";
+
+        return title;
+    connections:
+      success: 35156675-4b23-4690-a8d2-977e2503811d
